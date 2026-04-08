@@ -9,17 +9,36 @@ st.set_page_config(page_title="Churn Prediction", layout="wide")
 model = joblib.load("churn_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
+# Default session state
+if "tenure" not in st.session_state:
+    st.session_state.tenure = 24
+if "monthly" not in st.session_state:
+    st.session_state.monthly = 70.0
+
 # Title
 st.markdown("<h1 style='text-align: center;'>📊 Customer Churn Prediction</h1>", unsafe_allow_html=True)
 st.markdown("### Predict whether a customer will churn or stay")
 
-# Layout (2 columns)
+# Example buttons
+col_btn1, col_btn2 = st.columns(2)
+
+with col_btn1:
+    if st.button("🟢 Load Low Risk Customer"):
+        st.session_state.tenure = 48
+        st.session_state.monthly = 60
+
+with col_btn2:
+    if st.button("🔴 Load High Risk Customer"):
+        st.session_state.tenure = 2
+        st.session_state.monthly = 100
+
+# Layout
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("📌 Customer Info")
-    tenure = st.slider("Tenure (months)", 1, 72, 24)
-    monthly = st.number_input("Monthly Charges", value=70.0)
+    tenure = st.slider("Tenure (months)", 1, 72, st.session_state.tenure)
+    monthly = st.number_input("Monthly Charges", value=st.session_state.monthly)
     total = st.number_input("Total Charges", value=1500.0)
 
     SeniorCitizen = st.selectbox("Senior Citizen", [0, 1])
@@ -35,8 +54,9 @@ with col2:
     PaperlessBilling = st.selectbox("Paperless Billing", ["Yes", "No"])
     PaymentMethod = st.selectbox("Payment Method", ["Credit card", "Electronic check", "Mailed check"])
 
-# Predict button
+# Predict
 st.markdown("---")
+
 if st.button("🚀 Predict Churn"):
 
     columns = ['SeniorCitizen', 'tenure', 'MonthlyCharges', 'TotalCharges',
@@ -88,12 +108,11 @@ if st.button("🚀 Predict Churn"):
     probability = model.predict_proba(df)[0][1]
     prediction = 1 if probability > 0.4 else 0
 
-    # Output UI
+    # Result
     st.markdown("## 🔍 Prediction Result")
-
     st.metric("Churn Probability", f"{probability:.2f}")
 
-    # Risk level
+    # Risk
     if probability < 0.3:
         st.success("🟢 Low Risk Customer")
     elif probability < 0.6:
@@ -101,7 +120,7 @@ if st.button("🚀 Predict Churn"):
     else:
         st.error("🔴 High Risk Customer")
 
-    # Final decision
+    # Decision
     if prediction == 1:
         st.error("⚠ Customer likely to churn")
         st.info("💡 Suggestion: Offer discount or long-term plan")
@@ -109,30 +128,23 @@ if st.button("🚀 Predict Churn"):
         st.success("✅ Customer likely to stay")
         st.info("💡 Suggestion: Upsell premium services")
 
-st.markdown("### 📊 Key Insight")
-
-if st.button("🟢 Load Low Risk Customer"):
-    st.session_state.tenure = 48
-    st.session_state.monthly = 60
-
-if st.button("🔴 Load High Risk Customer"):
-    st.session_state.tenure = 2
-    st.session_state.monthly = 100
+    # Insights
+    st.markdown("### 📊 Key Insight")
 
     if probability > 0.6:
-    st.write("Customer is high risk due to:")
-    if Contract == "Month-to-month":
-        st.write("- Short-term contract")
-    if MonthlyCharges > 80:
-        st.write("- High monthly charges")
-    if Partner == "No":
-        st.write("- No partner support")
-else:
-    st.write("Customer is stable due to:")
-    if tenure > 24:
-        st.write("- Long tenure")
-    if Contract != "Month-to-month":
-        st.write("- Long-term contract")
+        st.write("Customer is high risk due to:")
+        if Contract == "Month-to-month":
+            st.write("- Short-term contract")
+        if monthly > 80:
+            st.write("- High monthly charges")
+        if Partner == "No":
+            st.write("- No partner support")
+    else:
+        st.write("Customer is stable due to:")
+        if tenure > 24:
+            st.write("- Long tenure")
+        if Contract != "Month-to-month":
+            st.write("- Long-term contract")
 
 # Footer
 st.markdown("---")
