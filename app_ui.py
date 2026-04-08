@@ -111,4 +111,4 @@ if st.button("🚀 Predict Churn"):
 
 # Footer
 st.markdown("---")
-st.markdown("Made with ❤️ by Data Scientist")
+st.markdown("Made with ❤️ by Shubham")
