@@ -119,7 +119,7 @@ if st.button("🔴 Load High Risk Customer"):
     st.session_state.tenure = 2
     st.session_state.monthly = 100
 
-if probability > 0.6:
+    if probability > 0.6:
     st.write("Customer is high risk due to:")
     if Contract == "Month-to-month":
         st.write("- Short-term contract")
