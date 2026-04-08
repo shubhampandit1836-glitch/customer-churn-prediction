@@ -109,6 +109,31 @@ if st.button("🚀 Predict Churn"):
         st.success("✅ Customer likely to stay")
         st.info("💡 Suggestion: Upsell premium services")
 
+st.markdown("### 📊 Key Insight")
+
+if st.button("🟢 Load Low Risk Customer"):
+    st.session_state.tenure = 48
+    st.session_state.monthly = 60
+
+if st.button("🔴 Load High Risk Customer"):
+    st.session_state.tenure = 2
+    st.session_state.monthly = 100
+
+if probability > 0.6:
+    st.write("Customer is high risk due to:")
+    if Contract == "Month-to-month":
+        st.write("- Short-term contract")
+    if MonthlyCharges > 80:
+        st.write("- High monthly charges")
+    if Partner == "No":
+        st.write("- No partner support")
+else:
+    st.write("Customer is stable due to:")
+    if tenure > 24:
+        st.write("- Long tenure")
+    if Contract != "Month-to-month":
+        st.write("- Long-term contract")
+
 # Footer
 st.markdown("---")
 st.markdown("Made with ❤️ by Shubham")
